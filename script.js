@@ -31,33 +31,12 @@ const sampleDrugs = [
     side_effects: "GI upset, rare lactic acidosis risk.",
     exam_hint: "First-line diabetes drug in many exam contexts.",
     related_drugs: "Insulin, Glipizide, Sitagliptin"
-  },
-  {
-    drug_name: "Amlodipine",
-    drug_class: "Calcium Channel Blocker",
-    system: "Cardiovascular",
-    mechanism: "Blocks L-type calcium channels and relaxes vascular smooth muscle.",
-    exam_use: "Hypertension and angina concept.",
-    side_effects: "Ankle swelling, flushing, headache.",
-    exam_hint: "Dihydropyridine CCB — more vascular action.",
-    related_drugs: "Nifedipine, Verapamil, Diltiazem"
-  },
-  {
-    drug_name: "Salbutamol",
-    drug_class: "Beta-2 Agonist",
-    system: "Respiratory",
-    mechanism: "Stimulates beta-2 receptors and causes bronchodilation.",
-    exam_use: "Asthma/bronchospasm concept.",
-    side_effects: "Tremor, fast heartbeat, nervousness.",
-    exam_hint: "Short-acting bronchodilator. Think asthma rescue concept.",
-    related_drugs: "Formoterol, Salmeterol, Terbutaline"
   }
 ];
 
 const drugGrid = document.getElementById("drugGrid");
 const searchInput = document.getElementById("searchInput");
 const systemFilter = document.getElementById("systemFilter");
-const csvFile = document.getElementById("csvFile");
 
 const totalDrugs = document.getElementById("totalDrugs");
 const totalClasses = document.getElementById("totalClasses");
@@ -73,31 +52,99 @@ const detailSideEffects = document.getElementById("detailSideEffects");
 const detailHint = document.getElementById("detailHint");
 const detailRelated = document.getElementById("detailRelated");
 
+function safeText(value) {
+  return value ? String(value).trim() : "";
+}
+
+function escapeHTML(text) {
+  return safeText(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let insideQuotes = false;
+
+  text = text.replace(/^\uFEFF/, "");
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const nextChar = text[i + 1];
+
+    if (char === '"' && insideQuotes && nextChar === '"') {
+      cell += '"';
+      i++;
+    } else if (char === '"') {
+      insideQuotes = !insideQuotes;
+    } else if (char === "," && !insideQuotes) {
+      row.push(cell);
+      cell = "";
+    } else if ((char === "\n" || char === "\r") && !insideQuotes) {
+      if (char === "\r" && nextChar === "\n") {
+        i++;
+      }
+
+      row.push(cell);
+      cell = "";
+
+      if (row.some(item => item.trim() !== "")) {
+        rows.push(row);
+      }
+
+      row = [];
+    } else {
+      cell += char;
+    }
+  }
+
+  if (cell || row.length > 0) {
+    row.push(cell);
+    rows.push(row);
+  }
+
+  const headers = rows[0].map(header => header.trim().replace(/^\uFEFF/, ""));
+  const data = rows.slice(1).map(values => {
+    const obj = {};
+    headers.forEach((header, index) => {
+      obj[header] = values[index] || "";
+    });
+    return obj;
+  });
+
+  return data;
+}
+
 function cleanDrug(row) {
   return {
-    drug_name: row.drug_name || row["Drug Name"] || "",
-    drug_class: row.drug_class || row["Drug Class"] || "",
-    system: row.system || row["System"] || "",
-    mechanism: row.mechanism || row["Mechanism"] || "",
-    exam_use: row.exam_use || row["Exam Use"] || row["Use"] || "",
-    side_effects: row.side_effects || row["Side Effects"] || "",
-    exam_hint: row.exam_hint || row["Exam Hint"] || "",
-    related_drugs: row.related_drugs || row["Related Drugs"] || ""
+    drug_name: safeText(row.drug_name || row["Drug Name"]),
+    drug_class: safeText(row.drug_class || row["Drug Class"]),
+    system: safeText(row.system || row["System"]),
+    mechanism: safeText(row.mechanism || row["Mechanism"]),
+    exam_use: safeText(row.exam_use || row["Exam Use"] || row["Use"]),
+    side_effects: safeText(row.side_effects || row["Side Effects"]),
+    exam_hint: safeText(row.exam_hint || row["Exam Hint"]),
+    related_drugs: safeText(row.related_drugs || row["Related Drugs"])
   };
 }
 
 function startApp(data) {
   allDrugs = data
     .map(cleanDrug)
-    .filter(drug => drug.drug_name.trim() !== "");
+    .filter(drug => drug.drug_name !== "");
 
   updateSystemFilter();
   applyFilters();
 }
 
 function updateStats() {
-  const classes = new Set(allDrugs.map(d => d.drug_class).filter(Boolean));
-  const systems = new Set(allDrugs.map(d => d.system).filter(Boolean));
+  const classes = new Set(allDrugs.map(drug => drug.drug_class).filter(Boolean));
+  const systems = new Set(allDrugs.map(drug => drug.system).filter(Boolean));
 
   totalDrugs.textContent = allDrugs.length;
   totalClasses.textContent = classes.size;
@@ -105,7 +152,7 @@ function updateStats() {
 }
 
 function updateSystemFilter() {
-  const systems = [...new Set(allDrugs.map(d => d.system).filter(Boolean))];
+  const systems = [...new Set(allDrugs.map(drug => drug.system).filter(Boolean))].sort();
 
   systemFilter.innerHTML = `<option value="All">All Systems</option>`;
 
@@ -129,6 +176,7 @@ function applyFilters() {
       ${drug.mechanism}
       ${drug.exam_use}
       ${drug.exam_hint}
+      ${drug.related_drugs}
     `.toLowerCase();
 
     const matchesSearch = combinedText.includes(searchText);
@@ -145,7 +193,7 @@ function renderDrugs() {
   drugGrid.innerHTML = "";
 
   if (visibleDrugs.length === 0) {
-    drugGrid.innerHTML = `<p>No drug found. Try another search.</p>`;
+    drugGrid.innerHTML = `<p class="no-results">No drug found. Try another search.</p>`;
     return;
   }
 
@@ -154,11 +202,11 @@ function renderDrugs() {
     card.className = "drug-card";
 
     card.innerHTML = `
-      <h3>${drug.drug_name}</h3>
-      <span class="tag">${drug.drug_class}</span>
-      <span class="tag">${drug.system}</span>
-      <p><strong>Mechanism:</strong> ${drug.mechanism}</p>
-      <p><strong>Exam Hint:</strong> ${drug.exam_hint}</p>
+      <h3>${escapeHTML(drug.drug_name)}</h3>
+      <span class="tag">${escapeHTML(drug.drug_class)}</span>
+      <span class="tag">${escapeHTML(drug.system)}</span>
+      <p><strong>Mechanism:</strong> ${escapeHTML(drug.mechanism || "Revise class mechanism.")}</p>
+      <p><strong>Exam Hint:</strong> ${escapeHTML(drug.exam_hint || "High-yield exam revision card.")}</p>
       <button onclick="showDrugDetail(${index})">View Details</button>
     `;
 
@@ -182,52 +230,21 @@ function showDrugDetail(index) {
   detailSection.scrollIntoView({ behavior: "smooth" });
 }
 
-if (csvFile) {
-  csvFile.addEventListener("change", function(event) {
-    const file = event.target.files[0];
-
-    if (!file) return;
-
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: function(results) {
-        startApp(results.data);
-      }
-    });
-  });
-}
-  const file = event.target.files[0];
-
-  if (!file) return;
-
-  Papa.parse(file, {
-    header: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-      startApp(results.data);
-    }
-  });
-});
-
 searchInput.addEventListener("input", applyFilters);
 systemFilter.addEventListener("change", applyFilters);
 
-// Try to auto-load drugs.csv after publishing
-fetch("drugs.csv")
+fetch("./drugs.csv?v=" + Date.now())
   .then(response => {
     if (!response.ok) {
-      throw new Error("No CSV found");
+      throw new Error("drugs.csv not found");
     }
     return response.text();
   })
   .then(csvText => {
-    const parsed = Papa.parse(csvText, {
-      header: true,
-      skipEmptyLines: true
-    });
-    startApp(parsed.data);
+    const data = parseCSV(csvText);
+    startApp(data);
   })
-  .catch(() => {
+  .catch(error => {
+    console.warn("CSV loading failed. Showing sample drugs.", error);
     startApp(sampleDrugs);
   });
