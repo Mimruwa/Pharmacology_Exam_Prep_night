@@ -297,3 +297,23 @@ footer {
     padding: 20px;
   }
 }
+/* Animated moving gradient for hero section */
+.hero {
+  background: linear-gradient(-45deg, #0f766e, #2563eb, #7c3aed, #06b6d4);
+  background-size: 400% 400%;
+  animation: gradientMove 12s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
