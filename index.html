@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pharma Night Prep</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- CSV reader library -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="badge">Pharmacology Exam Prep</div>
+    <h1>Pharma Night Prep</h1>
+    <p>Smart last-minute pharmacology revision for exams.</p>
+    <p class="warning">
+      Educational revision only. Not medical advice.
+    </p>
+  </header>
+
+  <main class="container">
+
+    <section class="tools">
+      <div>
+        <label>Upload your drugs.csv file</label>
+        <input type="file" id="csvFile" accept=".csv" />
+      </div>
+
+      <div>
+        <label>Search drug, class, or mechanism</label>
+        <input type="text" id="searchInput" placeholder="Search diazepam, NSAID, GABA..." />
+      </div>
+
+      <div>
+        <label>Filter by system</label>
+        <select id="systemFilter">
+          <option value="All">All Systems</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat-card">
+        <h3 id="totalDrugs">0</h3>
+        <p>Total Drugs</p>
+      </div>
+
+      <div class="stat-card">
+        <h3 id="totalClasses">0</h3>
+        <p>Drug Classes</p>
+      </div>
+
+      <div class="stat-card">
+        <h3 id="totalSystems">0</h3>
+        <p>Systems</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>High-Yield Drug Revision Cards</h2>
+      <div id="drugGrid" class="drug-grid"></div>
+    </section>
+
+    <section id="drugDetail" class="drug-detail hidden">
+      <h2 id="detailName"></h2>
+
+      <div class="detail-box">
+        <p><strong>Drug Class:</strong> <span id="detailClass"></span></p>
+        <p><strong>System:</strong> <span id="detailSystem"></span></p>
+        <p><strong>Mechanism:</strong> <span id="detailMechanism"></span></p>
+        <p><strong>Exam Use:</strong> <span id="detailUse"></span></p>
+        <p><strong>Side Effects:</strong> <span id="detailSideEffects"></span></p>
+        <p><strong>Exam Hint:</strong> <span id="detailHint"></span></p>
+        <p><strong>Related Drugs:</strong> <span id="detailRelated"></span></p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Pharma Night Prep — educational revision only.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
