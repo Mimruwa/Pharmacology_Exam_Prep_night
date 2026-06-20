@@ -2,127 +2,189 @@
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f8fafc;
-  color: #0f172a;
+html {
+  scroll-behavior: smooth;
 }
 
+body {
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: #f3f7fb;
+  color: #102033;
+}
+
+/* HERO SECTION */
 .hero {
   background: linear-gradient(135deg, #0f766e, #2563eb);
   color: white;
-  padding: 50px 20px;
+  padding: 48px 20px 56px;
   text-align: center;
 }
 
 .badge {
   display: inline-block;
-  background: rgba(255, 255, 255, 0.2);
-  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 8px 16px;
   border-radius: 999px;
   font-size: 14px;
-  margin-bottom: 16px;
+  font-weight: 700;
+  margin-bottom: 18px;
 }
 
 .hero h1 {
-  font-size: 42px;
+  font-size: 44px;
+  line-height: 1.1;
   margin: 10px 0;
+  letter-spacing: 1px;
 }
 
 .hero p {
   font-size: 18px;
-  margin: 8px 0;
+  margin: 10px 0;
+  opacity: 0.95;
 }
 
 .warning {
-  font-size: 14px !important;
-  background: rgba(255, 255, 255, 0.15);
-  padding: 10px;
-  border-radius: 12px;
   display: inline-block;
+  margin-top: 12px !important;
+  font-size: 14px !important;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.16);
+  padding: 10px 16px;
+  border-radius: 999px;
 }
 
+/* MAIN CONTAINER */
 .container {
-  max-width: 1100px;
-  margin: auto;
-  padding: 30px 20px;
+  max-width: 1180px;
+  margin: -34px auto 0;
+  padding: 0 20px 50px;
 }
 
+/* SEARCH/FILTER PANEL */
 .tools {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
-  background: white;
-  padding: 18px;
-  border-radius: 18px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-  margin-bottom: 24px;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  padding: 22px;
+  border-radius: 24px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.10);
+  margin-bottom: 26px;
+  border: 1px solid #e2e8f0;
 }
 
 label {
   display: block;
-  font-weight: bold;
-  margin-bottom: 8px;
+  font-weight: 800;
+  margin-bottom: 9px;
+  font-size: 16px;
+  color: #0f172a;
 }
 
 input,
 select {
   width: 100%;
-  padding: 12px;
+  padding: 14px 15px;
   border: 1px solid #cbd5e1;
-  border-radius: 12px;
+  border-radius: 16px;
   font-size: 15px;
+  background: white;
+  outline: none;
 }
 
+input:focus,
+select:focus {
+  border-color: #0f766e;
+  box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+}
+
+/* STATS */
 .stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
-  margin-bottom: 30px;
+  margin-bottom: 34px;
 }
 
 .stat-card {
   background: white;
-  border-radius: 18px;
-  padding: 20px;
+  border-radius: 22px;
+  padding: 22px 18px;
   text-align: center;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e8eef5;
 }
 
 .stat-card h3 {
-  font-size: 34px;
+  font-size: 36px;
   color: #0f766e;
-  margin: 0;
+  margin: 0 0 8px;
 }
 
+.stat-card p {
+  margin: 0;
+  font-size: 15px;
+  color: #475569;
+  font-weight: 700;
+}
+
+/* SECTION TITLE */
+section h2 {
+  font-size: 30px;
+  margin: 26px 0 18px;
+  color: #0f172a;
+}
+
+/* DRUG CARDS */
 .drug-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  gap: 22px;
 }
 
 .drug-card {
   background: white;
-  border-radius: 18px;
-  padding: 18px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.08);
   border: 1px solid #e2e8f0;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.drug-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 50px rgba(15, 23, 42, 0.13);
 }
 
 .drug-card h3 {
-  margin-top: 0;
+  margin: 0 0 14px;
   color: #0f766e;
+  font-size: 23px;
+  text-transform: capitalize;
 }
 
 .tag {
   display: inline-block;
   background: #e0f2fe;
   color: #0369a1;
-  padding: 6px 10px;
+  padding: 7px 11px;
   border-radius: 999px;
   font-size: 13px;
-  margin: 4px 4px 8px 0;
+  font-weight: 700;
+  margin: 4px 5px 10px 0;
+}
+
+.drug-card p {
+  font-size: 15px;
+  line-height: 1.55;
+  color: #334155;
+}
+
+.drug-card strong {
+  color: #0f172a;
 }
 
 .drug-card button {
@@ -130,47 +192,108 @@ select {
   background: #0f766e;
   color: white;
   border: none;
-  padding: 10px 14px;
-  border-radius: 12px;
+  padding: 12px 16px;
+  border-radius: 14px;
   cursor: pointer;
+  font-size: 15px;
+  font-weight: 800;
+  transition: background 0.18s ease, transform 0.18s ease;
 }
 
 .drug-card button:hover {
   background: #115e59;
+  transform: scale(1.02);
 }
 
+/* DETAILS */
 .drug-detail {
-  margin-top: 30px;
+  margin-top: 36px;
   background: white;
-  border-radius: 18px;
-  padding: 24px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  border-radius: 26px;
+  padding: 28px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.10);
+  border: 1px solid #e2e8f0;
+}
+
+.drug-detail h2 {
+  color: #0f766e;
+  text-transform: capitalize;
+  margin-top: 0;
 }
 
 .detail-box p {
-  line-height: 1.6;
+  line-height: 1.7;
   border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 10px;
+  padding: 12px 0;
+  margin: 0;
+}
+
+.detail-box p:last-child {
+  border-bottom: none;
 }
 
 .hidden {
   display: none;
 }
 
-footer {
-  text-align: center;
-  padding: 30px;
+.no-results {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
   color: #64748b;
+  font-weight: 700;
 }
 
-@media (max-width: 800px) {
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 34px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* TABLET */
+@media (max-width: 950px) {
+  .drug-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* MOBILE */
+@media (max-width: 700px) {
+  .hero {
+    padding: 36px 16px 46px;
+  }
+
+  .hero h1 {
+    font-size: 34px;
+  }
+
+  .hero p {
+    font-size: 16px;
+  }
+
+  .container {
+    margin-top: -25px;
+    padding: 0 14px 40px;
+  }
+
   .tools,
   .stats,
   .drug-grid {
     grid-template-columns: 1fr;
   }
 
-  .hero h1 {
-    font-size: 32px;
+  .tools {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  section h2 {
+    font-size: 24px;
+  }
+
+  .drug-card {
+    padding: 20px;
   }
 }
