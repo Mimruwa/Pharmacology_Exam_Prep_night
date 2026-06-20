@@ -404,3 +404,162 @@ footer {
     background-position: 220px -180px, -160px 220px, 260px 160px;
   }
 }
+
+
+/* Dynamic animated index hero */
+.animated-hero {
+  position: relative !important;
+  overflow: hidden !important;
+  min-height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at top left, #7c3aed, transparent 32%),
+              radial-gradient(circle at bottom right, #06b6d4, transparent 30%),
+              linear-gradient(135deg, #09001f, #1e1b4b, #0f766e) !important;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 5;
+  max-width: 900px;
+  margin: auto;
+  text-align: center;
+}
+
+/* Moving purple/blue blobs */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(18px);
+  opacity: 0.75;
+  z-index: 1;
+}
+
+.orb-one {
+  width: 220px;
+  height: 220px;
+  background: #a855f7;
+  top: 20px;
+  left: 8%;
+  animation: orbMoveOne 8s ease-in-out infinite alternate;
+}
+
+.orb-two {
+  width: 170px;
+  height: 170px;
+  background: #22d3ee;
+  bottom: 20px;
+  right: 12%;
+  animation: orbMoveTwo 7s ease-in-out infinite alternate;
+}
+
+.orb-three {
+  width: 140px;
+  height: 140px;
+  background: #ec4899;
+  top: 45%;
+  right: 35%;
+  animation: orbMoveThree 9s ease-in-out infinite alternate;
+}
+
+/* Sparkle dots */
+.sparkle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 18px white;
+  opacity: 0.85;
+  z-index: 2;
+}
+
+.sparkle-one {
+  top: 22%;
+  left: 20%;
+  animation: sparkleFloat 5s linear infinite;
+}
+
+.sparkle-two {
+  top: 35%;
+  right: 22%;
+  animation: sparkleFloat 6s linear infinite;
+}
+
+.sparkle-three {
+  bottom: 28%;
+  left: 32%;
+  animation: sparkleFloat 7s linear infinite;
+}
+
+.sparkle-four {
+  top: 18%;
+  right: 40%;
+  animation: sparkleFloat 5.5s linear infinite;
+}
+
+.sparkle-five {
+  bottom: 18%;
+  right: 30%;
+  animation: sparkleFloat 6.5s linear infinite;
+}
+
+/* Glass text effect */
+.animated-hero .badge,
+.animated-hero .warning {
+  backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.animated-hero h1 {
+  text-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+@keyframes orbMoveOne {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(140px, 70px) scale(1.18);
+  }
+}
+
+@keyframes orbMoveTwo {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(-120px, -80px) scale(1.2);
+  }
+}
+
+@keyframes orbMoveThree {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(-80px, 90px) scale(1.25);
+  }
+}
+
+@keyframes sparkleFloat {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.3;
+  }
+
+  50% {
+    transform: translateY(-60px) scale(1.5);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-120px) scale(0.8);
+    opacity: 0;
+  }
+}
