@@ -182,7 +182,21 @@ function showDrugDetail(index) {
   detailSection.scrollIntoView({ behavior: "smooth" });
 }
 
-csvFile.addEventListener("change", function(event) {
+if (csvFile) {
+  csvFile.addEventListener("change", function(event) {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: function(results) {
+        startApp(results.data);
+      }
+    });
+  });
+}
   const file = event.target.files[0];
 
   if (!file) return;
