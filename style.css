@@ -318,3 +318,89 @@ footer {
     background-position: 0% 50%;
   }
 }
+
+
+/* Attractive animated hero: moving purple glow + sparkles */
+.hero {
+  position: relative !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  background: linear-gradient(-45deg, #12001f, #312e81, #7c3aed, #2563eb, #0f766e) !important;
+  background-size: 500% 500% !important;
+  animation: heroGradientFlow 8s ease-in-out infinite !important;
+}
+
+/* Purple and blue moving glow blobs */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(168, 85, 247, 0.85), transparent 18%),
+    radial-gradient(circle at 70% 25%, rgba(236, 72, 153, 0.55), transparent 16%),
+    radial-gradient(circle at 55% 75%, rgba(34, 211, 238, 0.45), transparent 20%),
+    radial-gradient(circle at 85% 80%, rgba(124, 58, 237, 0.65), transparent 18%);
+  filter: blur(35px);
+  animation: purpleGlowMove 7s ease-in-out infinite alternate;
+}
+
+/* Moving sparkles / slickers */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.75;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 2px, transparent 3px),
+    radial-gradient(circle, rgba(216, 180, 254, 0.85) 0 2px, transparent 3px),
+    radial-gradient(circle, rgba(125, 211, 252, 0.75) 0 1.5px, transparent 3px);
+  background-size: 90px 90px, 140px 140px, 190px 190px;
+  background-position: 0 0, 40px 60px, 90px 30px;
+  animation: sparkleMove 9s linear infinite;
+}
+
+/* Keep text above animation */
+.hero > * {
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes heroGradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes purpleGlowMove {
+  0% {
+    transform: translate(-8%, -5%) rotate(0deg) scale(1);
+  }
+
+  50% {
+    transform: translate(6%, 8%) rotate(12deg) scale(1.12);
+  }
+
+  100% {
+    transform: translate(10%, -4%) rotate(-10deg) scale(1.05);
+  }
+}
+
+@keyframes sparkleMove {
+  0% {
+    background-position: 0 0, 40px 60px, 90px 30px;
+  }
+
+  100% {
+    background-position: 220px -180px, -160px 220px, 260px 160px;
+  }
+}
