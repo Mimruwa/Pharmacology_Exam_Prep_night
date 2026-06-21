@@ -636,3 +636,175 @@ fetch("./drugs.csv?v=" + Date.now())
     console.warn("CSV loading failed. Showing sample drugs.", error);
     startApp(sampleDrugs);
   });
+
+
+  /* QUIZ MODE LOGIC */
+
+let quizDeck = [];
+let quizIndex = 0;
+let quizScore = 0;
+let quizAnswered = false;
+
+const quizCounter = document.getElementById("quizCounter");
+const quizScoreText = document.getElementById("quizScore");
+const quizQuestionType = document.getElementById("quizQuestionType");
+const quizQuestion = document.getElementById("quizQuestion");
+const quizOptions = document.getElementById("quizOptions");
+const quizFeedback = document.getElementById("quizFeedback");
+const quizNextBtn = document.getElementById("quizNextBtn");
+const quizRestartBtn = document.getElementById("quizRestartBtn");
+
+function setupQuiz(deck) {
+  if (!quizQuestion || !quizOptions) {
+    return;
+  }
+
+  quizDeck = deck.filter(drug => drug.drug_name !== "");
+  quizIndex = 0;
+  quizScore = 0;
+  quizAnswered = false;
+
+  renderQuizQuestion();
+}
+
+function shuffleArray(array) {
+  const copied = [...array];
+
+  for (let i = copied.length - 1; i > 0; i--) {
+    const randomIndex = Math.floor(Math.random() * (i + 1));
+    [copied[i], copied[randomIndex]] = [copied[randomIndex], copied[i]];
+  }
+
+  return copied;
+}
+
+function getQuizOptions(correctDrug) {
+  const wrongOptions = allDrugs
+    .filter(drug => drug.drug_name !== correctDrug.drug_name)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3);
+
+  return shuffleArray([correctDrug, ...wrongOptions]);
+}
+
+function renderQuizQuestion() {
+  if (!quizQuestion || !quizOptions) {
+    return;
+  }
+
+  quizOptions.innerHTML = "";
+  quizFeedback.textContent = "";
+  quizFeedback.className = "quiz-feedback";
+  quizAnswered = false;
+
+  if (quizDeck.length === 0) {
+    quizCounter.textContent = "Question 0 / 0";
+    quizScoreText.textContent = "Score: 0";
+    quizQuestionType.textContent = "No quiz found";
+    quizQuestion.textContent = "Try another search or clear filters.";
+    return;
+  }
+
+  const currentDrug = quizDeck[quizIndex];
+
+  const clue =
+    currentDrug.mechanism ||
+    currentDrug.exam_hint ||
+    currentDrug.exam_use ||
+    `Drug class: ${currentDrug.drug_class}`;
+
+  quizCounter.textContent = `Question ${quizIndex + 1} / ${quizDeck.length}`;
+  quizScoreText.textContent = `Score: ${quizScore}`;
+  quizQuestionType.textContent = "Mechanism Question";
+  quizQuestion.textContent = `Which drug matches this clue? ${clue}`;
+
+  const options = getQuizOptions(currentDrug);
+
+  options.forEach(optionDrug => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = optionDrug.drug_name;
+    button.dataset.answer = optionDrug.drug_name;
+    button.dataset.correct = optionDrug.drug_name === currentDrug.drug_name ? "true" : "false";
+
+    button.addEventListener("click", () => checkQuizAnswer(button, currentDrug.drug_name));
+
+    quizOptions.appendChild(button);
+  });
+}
+
+function checkQuizAnswer(selectedButton, correctAnswer) {
+  if (quizAnswered) {
+    return;
+  }
+
+  quizAnswered = true;
+
+  const allOptionButtons = quizOptions.querySelectorAll("button");
+
+  allOptionButtons.forEach(button => {
+    button.classList.add("disabled");
+
+    if (button.dataset.correct === "true") {
+      button.classList.add("correct");
+    }
+  });
+
+  if (selectedButton.dataset.correct === "true") {
+    quizScore++;
+    quizFeedback.textContent = "Correct ✅";
+    quizFeedback.classList.add("correct-text");
+  } else {
+    selectedButton.classList.add("wrong");
+    quizFeedback.textContent = `Wrong ❌ Correct answer: ${correctAnswer}`;
+    quizFeedback.classList.add("wrong-text");
+  }
+
+  quizScoreText.textContent = `Score: ${quizScore}`;
+}
+
+function nextQuizQuestion() {
+  if (quizDeck.length === 0) {
+    return;
+  }
+
+  quizIndex = (quizIndex + 1) % quizDeck.length;
+  renderQuizQuestion();
+}
+
+function restartQuiz() {
+  quizDeck = shuffleArray(quizDeck);
+  quizIndex = 0;
+  quizScore = 0;
+  quizAnswered = false;
+  renderQuizQuestion();
+}
+
+if (quizNextBtn) {
+  quizNextBtn.addEventListener("click", nextQuizQuestion);
+}
+
+if (quizRestartBtn) {
+  quizRestartBtn.addEventListener("click", restartQuiz);
+}
+
+/* Connect quiz with existing app loading */
+
+const originalStartAppForQuiz = startApp;
+
+startApp = function(data) {
+  originalStartAppForQuiz(data);
+  setupQuiz(allDrugs);
+};
+
+const originalApplyFiltersForQuiz = applyFilters;
+
+applyFilters = function(shouldScroll = true) {
+  originalApplyFiltersForQuiz(shouldScroll);
+
+  if (visibleDrugs.length > 0) {
+    setupQuiz(visibleDrugs);
+  } else {
+    setupQuiz(allDrugs);
+  }
+};
