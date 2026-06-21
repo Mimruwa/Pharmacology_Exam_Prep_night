@@ -1,6 +1,9 @@
 let allDrugs = [];
 let visibleDrugs = [];
 let currentIndexMode = "system";
+let flashcardDeck = [];
+let flashcardIndex = 0;
+let flashcardShowingAnswer = false;
 
 const sampleDrugs = [
   {
@@ -37,11 +40,8 @@ const sampleDrugs = [
 
 const drugGrid = document.getElementById("drugGrid");
 const searchInput = document.getElementById("searchInput");
-const systemFilter = document.getElementById("systemFilter");
 const searchButton = document.getElementById("searchButton");
-
-
-
+const systemFilter = document.getElementById("systemFilter");
 
 const totalDrugs = document.getElementById("totalDrugs");
 const totalClasses = document.getElementById("totalClasses");
@@ -59,6 +59,19 @@ const detailRelated = document.getElementById("detailRelated");
 
 const indexTree = document.getElementById("indexTree");
 const indexTabButtons = document.querySelectorAll(".index-tab");
+
+const flashcardCounter = document.getElementById("flashcardCounter");
+const flashcardFront = document.getElementById("flashcardFront");
+const flashcardClass = document.getElementById("flashcardClass");
+const flashcardAnswer = document.getElementById("flashcardAnswer");
+const flashcardMechanism = document.getElementById("flashcardMechanism");
+const flashcardUse = document.getElementById("flashcardUse");
+const flashcardSideEffects = document.getElementById("flashcardSideEffects");
+const flashcardHint = document.getElementById("flashcardHint");
+const flashcardPrevBtn = document.getElementById("flashcardPrevBtn");
+const flashcardFlipBtn = document.getElementById("flashcardFlipBtn");
+const flashcardNextBtn = document.getElementById("flashcardNextBtn");
+const flashcardShuffleBtn = document.getElementById("flashcardShuffleBtn");
 
 const indexModes = ["system", "class", "az"];
 
@@ -162,6 +175,7 @@ function startApp(data) {
   updateStats();
   renderIndexTree();
   applyFilters(false);
+  setupFlashcards(allDrugs);
 }
 
 function updateStats() {
@@ -209,6 +223,7 @@ function applyFilters(shouldScroll = true) {
 
   renderDrugs();
   updateStats();
+  setupFlashcards(visibleDrugs.length > 0 ? visibleDrugs : allDrugs);
 
   if (shouldScroll) {
     document.getElementById("drugCards").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -318,10 +333,15 @@ function renderSystemIndex() {
   indexTree.innerHTML = systems.map((system, systemIndex) => {
     const classMap = systemMap.get(system);
     const classes = [...classMap.keys()].sort();
-    const drugCount = classes.reduce((sum, className) => sum + classMap.get(className).length, 0);
+
+    const drugCount = classes.reduce((sum, className) => {
+      return sum + classMap.get(className).length;
+    }, 0);
 
     const classesHTML = classes.map(className => {
-      const drugs = classMap.get(className).sort((a, b) => a.drug_name.localeCompare(b.drug_name));
+      const drugs = classMap
+        .get(className)
+        .sort((a, b) => a.drug_name.localeCompare(b.drug_name));
 
       const drugsHTML = drugs.map(drug => {
         return `
@@ -464,8 +484,82 @@ function filterByClass(className) {
   applyFilters();
 }
 
+function setupFlashcards(deck) {
+  flashcardDeck = deck.filter(drug => drug.drug_name !== "");
+  flashcardIndex = 0;
+  flashcardShowingAnswer = false;
+  renderFlashcard();
+}
+
+function renderFlashcard() {
+  if (!flashcardFront) {
+    return;
+  }
+
+  if (flashcardDeck.length === 0) {
+    flashcardCounter.textContent = "0 / 0";
+    flashcardFront.textContent = "No flashcards found";
+    flashcardClass.textContent = "Try another search";
+    flashcardAnswer.classList.add("hidden");
+    return;
+  }
+
+  const drug = flashcardDeck[flashcardIndex];
+
+  flashcardCounter.textContent = `${flashcardIndex + 1} / ${flashcardDeck.length}`;
+  flashcardFront.textContent = drug.drug_name || "Drug Name";
+  flashcardClass.textContent = `${drug.drug_class || "Drug Class"} · ${drug.system || "System"}`;
+  flashcardMechanism.textContent = drug.mechanism || "Revise class mechanism.";
+  flashcardUse.textContent = drug.exam_use || "Review exam use concept.";
+  flashcardSideEffects.textContent = drug.side_effects || "Review key adverse effects.";
+  flashcardHint.textContent = drug.exam_hint || "Focus on high-yield exam clues.";
+
+  if (flashcardShowingAnswer) {
+    flashcardAnswer.classList.remove("hidden");
+    flashcardFlipBtn.textContent = "Hide Answer";
+  } else {
+    flashcardAnswer.classList.add("hidden");
+    flashcardFlipBtn.textContent = "Show Answer";
+  }
+}
+
+function nextFlashcard() {
+  if (flashcardDeck.length === 0) {
+    return;
+  }
+
+  flashcardIndex = (flashcardIndex + 1) % flashcardDeck.length;
+  flashcardShowingAnswer = false;
+  renderFlashcard();
+}
+
+function previousFlashcard() {
+  if (flashcardDeck.length === 0) {
+    return;
+  }
+
+  flashcardIndex = (flashcardIndex - 1 + flashcardDeck.length) % flashcardDeck.length;
+  flashcardShowingAnswer = false;
+  renderFlashcard();
+}
+
+function flipFlashcard() {
+  flashcardShowingAnswer = !flashcardShowingAnswer;
+  renderFlashcard();
+}
+
+function shuffleFlashcards() {
+  for (let i = flashcardDeck.length - 1; i > 0; i--) {
+    const randomIndex = Math.floor(Math.random() * (i + 1));
+    [flashcardDeck[i], flashcardDeck[randomIndex]] = [flashcardDeck[randomIndex], flashcardDeck[i]];
+  }
+
+  flashcardIndex = 0;
+  flashcardShowingAnswer = false;
+  renderFlashcard();
+}
+
 searchInput.addEventListener("input", () => applyFilters(false));
-searchButton.addEventListener("click", () => applyFilters(true));
 
 searchInput.addEventListener("keydown", event => {
   if (event.key === "Enter") {
@@ -474,8 +568,9 @@ searchInput.addEventListener("keydown", event => {
   }
 });
 
-
-
+if (searchButton) {
+  searchButton.addEventListener("click", () => applyFilters(true));
+}
 
 systemFilter.addEventListener("change", () => applyFilters());
 
@@ -508,6 +603,22 @@ if (indexTree) {
       showDrugById(target.dataset.id);
     }
   });
+}
+
+if (flashcardPrevBtn) {
+  flashcardPrevBtn.addEventListener("click", previousFlashcard);
+}
+
+if (flashcardFlipBtn) {
+  flashcardFlipBtn.addEventListener("click", flipFlashcard);
+}
+
+if (flashcardNextBtn) {
+  flashcardNextBtn.addEventListener("click", nextFlashcard);
+}
+
+if (flashcardShuffleBtn) {
+  flashcardShuffleBtn.addEventListener("click", shuffleFlashcards);
 }
 
 fetch("./drugs.csv?v=" + Date.now())

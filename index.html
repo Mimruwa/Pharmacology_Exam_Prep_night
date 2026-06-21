@@ -30,6 +30,9 @@
         <a href="#revisionIndex" class="nav-link">🧬 Revision Index</a>
         <a href="#drugCards" class="nav-link">⭐ High-Yield Drugs</a>
         <a href="#drugDetail" class="nav-link">📘 Details</a>
+        <a href="#flashcardMode" class="nav-link">🧠 Flashcards</a>
+
+
       </nav>
 
       <div class="side-tip">
@@ -163,6 +166,68 @@
         </section>
 
       </section>
+            <!-- FLASHCARD MODE -->
+      <section id="flashcardMode" class="flashcard-panel">
+        <div class="panel-title">
+          <div>
+            <span>Flashcard Mode</span>
+            <h2>Quick Drug Revision</h2>
+          </div>
+        </div>
+
+        <div class="flashcard-layout">
+          <div class="flashcard-card">
+            <div class="flashcard-top">
+              <span id="flashcardCounter">0 / 0</span>
+              <button id="flashcardShuffleBtn" type="button">Shuffle</button>
+            </div>
+
+            <div class="flashcard-question">
+              <p>Drug</p>
+              <h3 id="flashcardFront">Flashcards will load here</h3>
+              <span id="flashcardClass">Drug class</span>
+            </div>
+
+            <div id="flashcardAnswer" class="flashcard-answer hidden">
+              <div>
+                <h4>Mechanism</h4>
+                <p id="flashcardMechanism">Mechanism will appear here.</p>
+              </div>
+
+              <div>
+                <h4>Exam Use</h4>
+                <p id="flashcardUse">Exam use will appear here.</p>
+              </div>
+
+              <div>
+                <h4>Side Effects</h4>
+                <p id="flashcardSideEffects">Side effects will appear here.</p>
+              </div>
+
+              <div>
+                <h4>Exam Hint</h4>
+                <p id="flashcardHint">Exam hint will appear here.</p>
+              </div>
+            </div>
+
+            <div class="flashcard-actions">
+              <button id="flashcardPrevBtn" type="button">Previous</button>
+              <button id="flashcardFlipBtn" type="button">Show Answer</button>
+              <button id="flashcardNextBtn" type="button">Next</button>
+            </div>
+          </div>
+
+          <div class="flashcard-note">
+            <h3>How to use</h3>
+            <p>Read the drug name first. Try to remember mechanism, use, side effects, and exam hint. Then click Show Answer.</p>
+            <p class="mini-warning">Educational revision only. Not medical advice.</p>
+          </div>
+        </div>
+      </section>
+
+
+
+
 
       <footer>
         <p>Pharma Night Prep — Educational revision only. Not medical advice. No dosing or self-treatment guidance.</p>
@@ -172,7 +237,7 @@
 
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=50"></script>
 
   <script>
     if ("serviceWorker" in navigator) {
