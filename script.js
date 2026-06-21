@@ -1,5 +1,6 @@
 let allDrugs = [];
 let visibleDrugs = [];
+let currentIndexMode = "system";
 
 const sampleDrugs = [
   {
@@ -51,6 +52,15 @@ const detailUse = document.getElementById("detailUse");
 const detailSideEffects = document.getElementById("detailSideEffects");
 const detailHint = document.getElementById("detailHint");
 const detailRelated = document.getElementById("detailRelated");
+
+const indexTree = document.getElementById("indexTree");
+const indexTabButtons = document.querySelectorAll(".index-tab");
+
+const indexModes = ["system", "class", "az"];
+
+indexTabButtons.forEach((button, index) => {
+  button.dataset.indexMode = indexModes[index] || "system";
+});
 
 function safeText(value) {
   return value ? String(value).trim() : "";
@@ -108,16 +118,21 @@ function parseCSV(text) {
     rows.push(row);
   }
 
+  if (rows.length === 0) {
+    return [];
+  }
+
   const headers = rows[0].map(header => header.trim().replace(/^\uFEFF/, ""));
-  const data = rows.slice(1).map(values => {
+
+  return rows.slice(1).map(values => {
     const obj = {};
+
     headers.forEach((header, index) => {
       obj[header] = values[index] || "";
     });
+
     return obj;
   });
-
-  return data;
 }
 
 function cleanDrug(row) {
@@ -136,10 +151,13 @@ function cleanDrug(row) {
 function startApp(data) {
   allDrugs = data
     .map(cleanDrug)
-    .filter(drug => drug.drug_name !== "");
+    .filter(drug => drug.drug_name !== "")
+    .map((drug, index) => ({ ...drug, _id: index }));
 
   updateSystemFilter();
-  applyFilters();
+  updateStats();
+  renderIndexTree();
+  applyFilters(false);
 }
 
 function updateStats() {
@@ -164,7 +182,7 @@ function updateSystemFilter() {
   });
 }
 
-function applyFilters() {
+function applyFilters(shouldScroll = true) {
   const searchText = searchInput.value.toLowerCase();
   const selectedSystem = systemFilter.value;
 
@@ -187,6 +205,10 @@ function applyFilters() {
 
   renderDrugs();
   updateStats();
+
+  if (shouldScroll) {
+    document.getElementById("drugCards").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 }
 
 function renderDrugs() {
@@ -203,8 +225,8 @@ function renderDrugs() {
 
     card.innerHTML = `
       <h3>${escapeHTML(drug.drug_name)}</h3>
-      <span class="tag">${escapeHTML(drug.drug_class)}</span>
-      <span class="tag">${escapeHTML(drug.system)}</span>
+      <span class="tag">${escapeHTML(drug.drug_class || "Drug Class")}</span>
+      <span class="tag">${escapeHTML(drug.system || "System")}</span>
       <p><strong>Mechanism:</strong> ${escapeHTML(drug.mechanism || "Revise class mechanism.")}</p>
       <p><strong>Exam Hint:</strong> ${escapeHTML(drug.exam_hint || "High-yield exam revision card.")}</p>
       <button onclick="showDrugDetail(${index})">View Details</button>
@@ -217,21 +239,260 @@ function renderDrugs() {
 function showDrugDetail(index) {
   const drug = visibleDrugs[index];
 
-  detailName.textContent = drug.drug_name;
-  detailClass.textContent = drug.drug_class;
-  detailSystem.textContent = drug.system;
-  detailMechanism.textContent = drug.mechanism;
-  detailUse.textContent = drug.exam_use;
-  detailSideEffects.textContent = drug.side_effects;
-  detailHint.textContent = drug.exam_hint;
-  detailRelated.textContent = drug.related_drugs;
+  if (!drug) {
+    return;
+  }
 
-  detailSection.classList.remove("hidden");
-  detailSection.scrollIntoView({ behavior: "smooth" });
+  fillDrugDetail(drug);
 }
 
-searchInput.addEventListener("input", applyFilters);
-systemFilter.addEventListener("change", applyFilters);
+function showDrugById(drugId) {
+  const drug = allDrugs.find(item => String(item._id) === String(drugId));
+
+  if (!drug) {
+    return;
+  }
+
+  fillDrugDetail(drug);
+}
+
+function fillDrugDetail(drug) {
+  detailName.textContent = drug.drug_name || "Drug Name";
+  detailClass.textContent = drug.drug_class || "Drug Class";
+  detailSystem.textContent = drug.system || "System";
+  detailMechanism.textContent = drug.mechanism || "Revise class mechanism.";
+  detailUse.textContent = drug.exam_use || "Review exam use concept.";
+  detailSideEffects.textContent = drug.side_effects || "Review key adverse effects.";
+  detailHint.textContent = drug.exam_hint || "Focus on high-yield exam clues.";
+  detailRelated.textContent = drug.related_drugs || "No related drugs listed.";
+
+  detailSection.classList.remove("hidden");
+  detailSection.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function renderIndexTree() {
+  if (!indexTree) {
+    return;
+  }
+
+  if (allDrugs.length === 0) {
+    indexTree.innerHTML = `<p class="index-placeholder">Index will appear after CSV loads.</p>`;
+    return;
+  }
+
+  if (currentIndexMode === "system") {
+    renderSystemIndex();
+  } else if (currentIndexMode === "class") {
+    renderClassIndex();
+  } else {
+    renderAZIndex();
+  }
+}
+
+function renderSystemIndex() {
+  const systemMap = new Map();
+
+  allDrugs.forEach(drug => {
+    const system = drug.system || "Other";
+    const drugClass = drug.drug_class || "General";
+
+    if (!systemMap.has(system)) {
+      systemMap.set(system, new Map());
+    }
+
+    const classMap = systemMap.get(system);
+
+    if (!classMap.has(drugClass)) {
+      classMap.set(drugClass, []);
+    }
+
+    classMap.get(drugClass).push(drug);
+  });
+
+  const systems = [...systemMap.keys()].sort();
+
+  indexTree.innerHTML = systems.map((system, systemIndex) => {
+    const classMap = systemMap.get(system);
+    const classes = [...classMap.keys()].sort();
+    const drugCount = classes.reduce((sum, className) => sum + classMap.get(className).length, 0);
+
+    const classesHTML = classes.map(className => {
+      const drugs = classMap.get(className).sort((a, b) => a.drug_name.localeCompare(b.drug_name));
+
+      const drugsHTML = drugs.map(drug => {
+        return `
+          <button class="tree-drug" data-action="drug" data-id="${drug._id}">
+            ${escapeHTML(drug.drug_name)}
+          </button>
+        `;
+      }).join("");
+
+      return `
+        <details class="tree-class">
+          <summary>
+            <span>${escapeHTML(className)}</span>
+            <small>${drugs.length} drugs</small>
+          </summary>
+
+          <button class="tree-filter" data-action="class" data-value="${escapeHTML(className)}">Show all</button>
+
+          <div class="tree-drug-list">${drugsHTML}</div>
+        </details>
+      `;
+    }).join("");
+
+    return `
+      <details class="tree-system" ${systemIndex < 4 ? "open" : ""}>
+        <summary>
+          <span>${escapeHTML(system)}</span>
+          <small>${classes.length} classes · ${drugCount} drugs</small>
+        </summary>
+
+        <button class="tree-filter system-filter" data-action="system" data-value="${escapeHTML(system)}">
+          Show all ${escapeHTML(system)}
+        </button>
+
+        <div class="tree-children">${classesHTML}</div>
+      </details>
+    `;
+  }).join("");
+}
+
+function renderClassIndex() {
+  const classMap = new Map();
+
+  allDrugs.forEach(drug => {
+    const drugClass = drug.drug_class || "General";
+
+    if (!classMap.has(drugClass)) {
+      classMap.set(drugClass, []);
+    }
+
+    classMap.get(drugClass).push(drug);
+  });
+
+  const classes = [...classMap.keys()].sort();
+
+  indexTree.innerHTML = classes.map((className, classIndex) => {
+    const drugs = classMap.get(className).sort((a, b) => a.drug_name.localeCompare(b.drug_name));
+
+    const drugsHTML = drugs.map(drug => {
+      return `
+        <button class="tree-drug" data-action="drug" data-id="${drug._id}">
+          ${escapeHTML(drug.drug_name)}
+        </button>
+      `;
+    }).join("");
+
+    return `
+      <details class="tree-system" ${classIndex < 5 ? "open" : ""}>
+        <summary>
+          <span>${escapeHTML(className)}</span>
+          <small>${drugs.length} drugs</small>
+        </summary>
+
+        <button class="tree-filter" data-action="class" data-value="${escapeHTML(className)}">Show all</button>
+
+        <div class="tree-drug-list">${drugsHTML}</div>
+      </details>
+    `;
+  }).join("");
+}
+
+function renderAZIndex() {
+  const letterMap = new Map();
+
+  allDrugs.forEach(drug => {
+    const firstLetter = drug.drug_name.charAt(0).toUpperCase() || "#";
+    const letter = /[A-Z]/.test(firstLetter) ? firstLetter : "#";
+
+    if (!letterMap.has(letter)) {
+      letterMap.set(letter, []);
+    }
+
+    letterMap.get(letter).push(drug);
+  });
+
+  const letters = [...letterMap.keys()].sort();
+
+  indexTree.innerHTML = letters.map((letter, letterIndex) => {
+    const drugs = letterMap.get(letter).sort((a, b) => a.drug_name.localeCompare(b.drug_name));
+
+    const drugsHTML = drugs.map(drug => {
+      return `
+        <button class="tree-drug" data-action="drug" data-id="${drug._id}">
+          ${escapeHTML(drug.drug_name)}
+        </button>
+      `;
+    }).join("");
+
+    return `
+      <details class="tree-system" ${letterIndex < 5 ? "open" : ""}>
+        <summary>
+          <span>${escapeHTML(letter)}</span>
+          <small>${drugs.length} drugs</small>
+        </summary>
+
+        <div class="tree-drug-list">${drugsHTML}</div>
+      </details>
+    `;
+  }).join("");
+}
+
+function filterBySystem(system) {
+  searchInput.value = "";
+
+  const hasOption = [...systemFilter.options].some(option => option.value === system);
+
+  if (hasOption) {
+    systemFilter.value = system;
+  } else {
+    systemFilter.value = "All";
+    searchInput.value = system;
+  }
+
+  applyFilters();
+}
+
+function filterByClass(className) {
+  systemFilter.value = "All";
+  searchInput.value = className;
+  applyFilters();
+}
+
+searchInput.addEventListener("input", () => applyFilters(false));
+systemFilter.addEventListener("change", () => applyFilters());
+
+indexTabButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    indexTabButtons.forEach(tab => tab.classList.remove("active"));
+    button.classList.add("active");
+    currentIndexMode = button.dataset.indexMode;
+    renderIndexTree();
+  });
+});
+
+if (indexTree) {
+  indexTree.addEventListener("click", event => {
+    const target = event.target.closest("[data-action]");
+
+    if (!target) {
+      return;
+    }
+
+    if (target.dataset.action === "system") {
+      filterBySystem(target.dataset.value);
+    }
+
+    if (target.dataset.action === "class") {
+      filterByClass(target.dataset.value);
+    }
+
+    if (target.dataset.action === "drug") {
+      showDrugById(target.dataset.id);
+    }
+  });
+}
 
 fetch("./drugs.csv?v=" + Date.now())
   .then(response => {

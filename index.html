@@ -3,112 +3,181 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Pharma Night Prep</title>
+
   <link rel="stylesheet" href="style.css" />
-
-<link rel="manifest" href="manifest.json" />
-<meta name="theme-color" content="#7c3aed" />
-
-  <!-- CSV reader library -->
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-
-
-
-
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#4f46e5" />
 </head>
-
-
 
 <body>
 
-<header class="hero animated-hero">
-  <div class="orb orb-one"></div>
-  <div class="orb orb-two"></div>
-  <div class="orb orb-three"></div>
+  <div class="app-layout">
 
-  <div class="sparkle sparkle-one"></div>
-  <div class="sparkle sparkle-two"></div>
-  <div class="sparkle sparkle-three"></div>
-  <div class="sparkle sparkle-four"></div>
-  <div class="sparkle sparkle-five"></div>
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand-box">
+        <div class="brand-logo">💊</div>
+        <div>
+          <h1>Pharma<br>Night Prep</h1>
+          <p>Smart last-minute pharmacology revision for exams.</p>
+        </div>
+      </div>
 
-  <div class="hero-content">
-    <div class="badge">Pharmacology Exam Prep</div>
-    <h1>Pharma Night Prep</h1>
-    <p>Smart last-minute pharmacology revision for exams.</p>
-    <p class="warning">
-      Educational revision only. Not medical advice.
-    </p>
+      <nav class="sidebar-nav">
+        <a href="#top" class="nav-link active">🏠 Dashboard</a>
+        <a href="#revisionIndex" class="nav-link">🧬 Revision Index</a>
+        <a href="#drugCards" class="nav-link">⭐ High-Yield Drugs</a>
+        <a href="#drugDetail" class="nav-link">📘 Details</a>
+      </nav>
+
+      <div class="side-tip">
+        <h3>Study Tip 🌙</h3>
+        <p>Short, focused sessions beat long cramming. Review smart, not just hard.</p>
+      </div>
+
+      <div class="student-box">
+        <div class="student-avatar">🎓</div>
+        <div>
+          <h3>Pharma Student</h3>
+          <p>Exam Mode</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="top">
+
+      <!-- HERO -->
+      <section class="hero-dashboard">
+        <div class="hero-text">
+          <span class="hero-label">PHARMACOLOGY EXAM PREP</span>
+          <h1>Pharma Night Prep</h1>
+          <p>Your smart last-minute pharmacology revision hub.</p>
+        </div>
+
+        <div class="hero-visual">
+          <div class="book book-one">PHARMACOLOGY</div>
+          <div class="book book-two">THERAPEUTICS</div>
+          <div class="book book-three">EXAM PREP</div>
+          <div class="lab-flask"></div>
+          <div class="floating-pill pill-a"></div>
+          <div class="floating-pill pill-b"></div>
+        </div>
+      </section>
+
+      <!-- DISCLAIMER -->
+      <section class="safety-note">
+        <span>🛡️</span>
+        <p>Educational revision only. Not medical advice. No dosing or self-treatment guidance.</p>
+      </section>
+
+      <!-- SEARCH TOOLS -->
+      <section class="tools">
+        <div>
+          <label>Search drug, class, or mechanism</label>
+          <input type="text" id="searchInput" placeholder="Search diazepam, NSAID, GABA..." />
+        </div>
+
+        <div>
+          <label>Filter by system</label>
+          <select id="systemFilter">
+            <option value="All">All Systems</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- STATS -->
+      <section class="stats">
+        <div class="stat-card">
+          <span>📚</span>
+          <h3 id="totalSystems">0</h3>
+          <p>Systems</p>
+        </div>
+
+        <div class="stat-card">
+          <span>💊</span>
+          <h3 id="totalClasses">0</h3>
+          <p>Drug Classes</p>
+        </div>
+
+        <div class="stat-card">
+          <span>⭐</span>
+          <h3 id="totalDrugs">0</h3>
+          <p>High-Yield Drugs</p>
+        </div>
+      </section>
+
+      <!-- MAIN DASHBOARD GRID -->
+      <section class="dashboard-grid">
+
+        <!-- REVISION INDEX -->
+        <section class="revision-panel" id="revisionIndex">
+          <div class="panel-title">
+            <div>
+              <span>Revision Index</span>
+              <h2>Browse by system</h2>
+            </div>
+          </div>
+
+          <div class="index-tabs">
+            <button class="index-tab active" type="button">By System</button>
+            <button class="index-tab" type="button">By Class</button>
+            <button class="index-tab" type="button">A-Z Drugs</button>
+          </div>
+
+          <div id="indexTree" class="index-tree">
+            <p class="index-placeholder">Index will load after script update.</p>
+          </div>
+        </section>
+
+        <!-- DRUG CARDS -->
+        <section class="cards-panel" id="drugCards">
+          <div class="panel-title">
+            <div>
+              <span>Continue Revising</span>
+              <h2>High-Yield Drug Cards</h2>
+            </div>
+          </div>
+
+          <div id="drugGrid" class="drug-grid"></div>
+        </section>
+
+        <!-- DRUG DETAIL -->
+        <section id="drugDetail" class="drug-detail hidden">
+          <h2 id="detailName"></h2>
+
+          <div class="detail-box">
+            <p><strong>Drug Class:</strong> <span id="detailClass"></span></p>
+            <p><strong>System:</strong> <span id="detailSystem"></span></p>
+            <p><strong>Mechanism:</strong> <span id="detailMechanism"></span></p>
+            <p><strong>Exam Use:</strong> <span id="detailUse"></span></p>
+            <p><strong>Side Effects:</strong> <span id="detailSideEffects"></span></p>
+            <p><strong>Exam Hint:</strong> <span id="detailHint"></span></p>
+            <p><strong>Related Drugs:</strong> <span id="detailRelated"></span></p>
+          </div>
+        </section>
+
+      </section>
+
+      <footer>
+        <p>Pharma Night Prep — Educational revision only. Not medical advice. No dosing or self-treatment guidance.</p>
+      </footer>
+
+    </main>
+
   </div>
-</header>
-
-  <main class="container">
-
-    <section class="tools">
-             <label>Search drug, class, or mechanism</label>
-        <input type="text" id="searchInput" placeholder="Search diazepam, NSAID, GABA..." />
-      </div>
-
-      <div>
-        <label>Filter by system</label>
-        <select id="systemFilter">
-          <option value="All">All Systems</option>
-        </select>
-      </div>
-    </section>
-
-    <section class="stats">
-      <div class="stat-card">
-        <h3 id="totalDrugs">0</h3>
-        <p>Total Drugs</p>
-      </div>
-
-      <div class="stat-card">
-        <h3 id="totalClasses">0</h3>
-        <p>Drug Classes</p>
-      </div>
-
-      <div class="stat-card">
-        <h3 id="totalSystems">0</h3>
-        <p>Systems</p>
-      </div>
-    </section>
-
-    <section>
-      <h2>High-Yield Drug Revision Cards</h2>
-      <div id="drugGrid" class="drug-grid"></div>
-    </section>
-
-    <section id="drugDetail" class="drug-detail hidden">
-      <h2 id="detailName"></h2>
-
-      <div class="detail-box">
-        <p><strong>Drug Class:</strong> <span id="detailClass"></span></p>
-        <p><strong>System:</strong> <span id="detailSystem"></span></p>
-        <p><strong>Mechanism:</strong> <span id="detailMechanism"></span></p>
-        <p><strong>Exam Use:</strong> <span id="detailUse"></span></p>
-        <p><strong>Side Effects:</strong> <span id="detailSideEffects"></span></p>
-        <p><strong>Exam Hint:</strong> <span id="detailHint"></span></p>
-        <p><strong>Related Drugs:</strong> <span id="detailRelated"></span></p>
-      </div>
-    </section>
-
-  </main>
-
-  <footer>
-    <p>Pharma Night Prep — educational revision only.</p>
-  </footer>
 
   <script src="script.js"></script>
 
-<script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function() {
-      navigator.serviceWorker.register("service-worker.js");
-    });
-  }
-</script>
-
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function() {
+        navigator.serviceWorker.register("service-worker.js");
+      });
+    }
+  </script>
 
 </body>
 </html>
