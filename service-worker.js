@@ -1,14 +1,14 @@
-const CACHE_NAME = "pharma-night-prep-v1";
+const CACHE_NAME = "pharma-night-prep-v100";
 
-const CORE_ASSETS = [
+const APP_ASSETS = [
   "./",
   "./index.html",
-  "./style.css",
-  "./script.js",
-  "./drugs.csv",
+  "./style.css?v=100",
+  "./script.js?v=100",
+  "./drugs.csv?v=100",
   "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png"
+  "./icon 1.png",
+  "./icon 2.png"
 ];
 
 self.addEventListener("install", event => {
@@ -16,13 +16,7 @@ self.addEventListener("install", event => {
 
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      return Promise.all(
-        CORE_ASSETS.map(asset => {
-          return cache.add(asset).catch(() => {
-            return null;
-          });
-        })
-      );
+      return cache.addAll(APP_ASSETS);
     })
   );
 });
@@ -61,7 +55,13 @@ self.addEventListener("fetch", event => {
       })
       .catch(() => {
         return caches.match(event.request).then(cachedResponse => {
-          return cachedResponse || caches.match("./index.html");
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+
+          if (event.request.mode === "navigate") {
+            return caches.match("./index.html");
+          }
         });
       })
   );
