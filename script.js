@@ -38,6 +38,10 @@ const sampleDrugs = [
 const drugGrid = document.getElementById("drugGrid");
 const searchInput = document.getElementById("searchInput");
 const systemFilter = document.getElementById("systemFilter");
+const searchButton = document.getElementById("searchButton");
+
+
+
 
 const totalDrugs = document.getElementById("totalDrugs");
 const totalClasses = document.getElementById("totalClasses");
@@ -461,6 +465,18 @@ function filterByClass(className) {
 }
 
 searchInput.addEventListener("input", () => applyFilters(false));
+searchButton.addEventListener("click", () => applyFilters(true));
+
+searchInput.addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    applyFilters(true);
+  }
+});
+
+
+
+
 systemFilter.addEventListener("change", () => applyFilters());
 
 indexTabButtons.forEach(button => {

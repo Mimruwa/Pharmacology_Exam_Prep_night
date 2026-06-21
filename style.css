@@ -818,3 +818,33 @@ footer {
   color: #9a3412;
   font-weight: 900;
 }
+
+.search-row {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: 10px;
+}
+
+.search-button {
+  border: none;
+  border-radius: 15px;
+  color: white;
+  font-size: 15px;
+  font-weight: 950;
+  background: linear-gradient(135deg, #06b6d4, #7c3aed);
+  box-shadow: 0 14px 28px rgba(79, 70, 229, 0.22);
+}
+
+.search-button:hover {
+  transform: translateY(-1px);
+}
+
+@media (max-width: 700px) {
+  .search-row {
+    grid-template-columns: 1fr;
+  }
+
+  .search-button {
+    padding: 14px;
+  }
+}
