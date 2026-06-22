@@ -1023,3 +1023,178 @@ if (updateAppBtn) {
     }
   });
 }
+
+/* WEAK REVIEW LOGIC */
+
+const WEAK_REVIEW_KEY = "pharmaNightPrepWeakReview";
+
+const weakCount = document.getElementById("weakCount");
+const weakList = document.getElementById("weakList");
+const clearWeakBtn = document.getElementById("clearWeakBtn");
+
+function getWeakReviewItems() {
+  try {
+    const savedItems = localStorage.getItem(WEAK_REVIEW_KEY);
+    return savedItems ? JSON.parse(savedItems) : [];
+  } catch (error) {
+    console.warn("Could not load weak review list.", error);
+    return [];
+  }
+}
+
+function saveWeakReviewItems(items) {
+  localStorage.setItem(WEAK_REVIEW_KEY, JSON.stringify(items));
+}
+
+function addWeakDrug(drug) {
+  if (!drug || !drug.drug_name) {
+    return;
+  }
+
+  const items = getWeakReviewItems();
+  const existingItem = items.find(item => item.drug_name === drug.drug_name);
+
+  if (existingItem) {
+    existingItem.mistake_count = (existingItem.mistake_count || 1) + 1;
+    existingItem.last_wrong_at = new Date().toISOString();
+  } else {
+    items.unshift({
+      drug_name: drug.drug_name,
+      drug_class: drug.drug_class || "Drug Class",
+      system: drug.system || "System",
+      mechanism: drug.mechanism || "",
+      exam_hint: drug.exam_hint || "",
+      mistake_count: 1,
+      last_wrong_at: new Date().toISOString()
+    });
+  }
+
+  saveWeakReviewItems(items);
+  renderWeakReviewList();
+}
+
+function removeWeakDrug(drugName) {
+  const items = getWeakReviewItems();
+  const updatedItems = items.filter(item => item.drug_name !== drugName);
+
+  saveWeakReviewItems(updatedItems);
+  renderWeakReviewList();
+}
+
+function clearWeakReviewList() {
+  localStorage.removeItem(WEAK_REVIEW_KEY);
+  renderWeakReviewList();
+}
+
+function renderWeakReviewList() {
+  if (!weakList || !weakCount) {
+    return;
+  }
+
+  const items = getWeakReviewItems();
+
+  weakCount.textContent = items.length;
+  weakList.innerHTML = "";
+
+  if (items.length === 0) {
+    weakList.innerHTML = `<p class="weak-empty">Wrong quiz answers will appear here.</p>`;
+    return;
+  }
+
+  items.forEach(item => {
+    const weakItem = document.createElement("div");
+    weakItem.className = "weak-item";
+
+    weakItem.innerHTML = `
+      <div class="weak-item-top">
+        <div>
+          <h3>${escapeHTML(item.drug_name)}</h3>
+          <p>${escapeHTML(item.mechanism || item.exam_hint || "Review this drug again.")}</p>
+        </div>
+      </div>
+
+      <div class="weak-tags">
+        <span>${escapeHTML(item.system)}</span>
+        <span>${escapeHTML(item.drug_class)}</span>
+        <span>${item.mistake_count || 1} wrong</span>
+      </div>
+
+      <div class="weak-actions">
+        <button class="weak-view-btn" type="button" data-weak-action="view" data-drug-name="${escapeHTML(item.drug_name)}">
+          View Details
+        </button>
+
+        <button class="weak-remove-btn" type="button" data-weak-action="remove" data-drug-name="${escapeHTML(item.drug_name)}">
+          Remove
+        </button>
+      </div>
+    `;
+
+    weakList.appendChild(weakItem);
+  });
+}
+
+function openWeakDrugDetail(drugName) {
+  const drug = allDrugs.find(item => item.drug_name === drugName);
+
+  if (!drug) {
+    return;
+  }
+
+  fillDrugDetail(drug);
+}
+
+if (weakList) {
+  weakList.addEventListener("click", event => {
+    const target = event.target.closest("[data-weak-action]");
+
+    if (!target) {
+      return;
+    }
+
+    const action = target.dataset.weakAction;
+    const drugName = target.dataset.drugName;
+
+    if (action === "view") {
+      openWeakDrugDetail(drugName);
+    }
+
+    if (action === "remove") {
+      removeWeakDrug(drugName);
+    }
+  });
+}
+
+if (clearWeakBtn) {
+  clearWeakBtn.addEventListener("click", () => {
+    clearWeakReviewList();
+  });
+}
+
+/* Connect weak review with quiz wrong answers */
+
+const originalCheckQuizAnswerForWeakReview = checkQuizAnswer;
+
+checkQuizAnswer = function(selectedButton, currentDrug) {
+  const shouldSaveWeakDrug =
+    selectedButton &&
+    selectedButton.dataset.correct !== "true" &&
+    !quizAnswered;
+
+  originalCheckQuizAnswerForWeakReview(selectedButton, currentDrug);
+
+  if (shouldSaveWeakDrug) {
+    addWeakDrug(currentDrug);
+  }
+};
+
+/* Render weak list after app loading */
+
+const originalStartAppForWeakReview = startApp;
+
+startApp = function(data) {
+  originalStartAppForWeakReview(data);
+  renderWeakReviewList();
+};
+
+renderWeakReviewList();

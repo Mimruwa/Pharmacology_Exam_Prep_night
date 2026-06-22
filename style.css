@@ -1394,3 +1394,154 @@ footer {
 .app-version-box button:active {
   transform: translateY(0);
 }
+
+/* WEAK REVIEW */
+
+.weak-panel {
+  margin-top: 16px;
+  overflow: hidden;
+  border-radius: 24px;
+  background: white;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.clear-weak-btn {
+  border: none;
+  padding: 10px 14px;
+  border-radius: 999px;
+  color: white;
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  font-size: 13px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.clear-weak-btn:hover {
+  transform: translateY(-1px);
+}
+
+.weak-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 16px;
+  padding: 18px;
+}
+
+.weak-summary-card {
+  padding: 24px;
+  border-radius: 22px;
+  color: white;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.24), transparent 28%),
+    linear-gradient(135deg, #312e81, #7c3aed);
+  box-shadow: 0 18px 45px rgba(49, 46, 129, 0.22);
+}
+
+.weak-summary-card span {
+  font-size: 32px;
+}
+
+.weak-summary-card h3 {
+  margin: 12px 0 4px;
+  font-size: 42px;
+  letter-spacing: -0.06em;
+}
+
+.weak-summary-card p {
+  margin: 0;
+  color: #ddd6fe;
+  font-weight: 900;
+}
+
+.weak-list {
+  display: grid;
+  gap: 12px;
+}
+
+.weak-empty {
+  margin: 0;
+  padding: 22px;
+  border-radius: 18px;
+  color: #475569;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  font-weight: 800;
+}
+
+.weak-item {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  border-radius: 20px;
+  background: #f8fafc;
+  border: 1px solid #eef0f6;
+}
+
+.weak-item-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.weak-item h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 22px;
+  letter-spacing: -0.04em;
+}
+
+.weak-item p {
+  margin: 0;
+  color: #475569;
+  font-weight: 750;
+  line-height: 1.5;
+}
+
+.weak-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.weak-tags span {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #4c1d95;
+  background: #ede9fe;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.weak-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.weak-actions button {
+  border: none;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.weak-view-btn {
+  color: white;
+  background: linear-gradient(135deg, #06b6d4, #7c3aed);
+}
+
+.weak-remove-btn {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+@media (max-width: 900px) {
+  .weak-layout {
+    grid-template-columns: 1fr;
+  }
+}
