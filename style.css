@@ -1545,3 +1545,20 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+
+
+/* FOOTER PRIVACY LINK */
+
+footer a {
+  display: inline-flex;
+  margin-top: 6px;
+  color: #4f46e5;
+  font-weight: 950;
+  text-decoration: none;
+}
+
+footer a:hover {
+  color: #7c3aed;
+  text-decoration: underline;
+}
