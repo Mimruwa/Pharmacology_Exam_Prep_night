@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Exam Survival Pack | Pharma Night Prep</title>
+
+  <link rel="stylesheet" href="style.css?v=150" />
+  <meta name="theme-color" content="#4f46e5" />
+
+  <style>
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(124, 58, 237, 0.14), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(6, 182, 212, 0.12), transparent 30%),
+        #f6f7fb;
+    }
+
+    .premium-wrapper {
+      width: min(1120px, calc(100% - 32px));
+      margin: 40px auto;
+    }
+
+    .premium-hero {
+      overflow: hidden;
+      border-radius: 32px;
+      color: white;
+      background:
+        radial-gradient(circle at top right, rgba(34, 211, 238, 0.22), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(236, 72, 153, 0.18), transparent 30%),
+        linear-gradient(135deg, #0f172a, #312e81 45%, #6d28d9);
+      box-shadow: 0 28px 80px rgba(49, 46, 129, 0.25);
+    }
+
+    .premium-hero-inner {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      padding: 42px;
+      align-items: center;
+    }
+
+    .premium-badge {
+      display: inline-flex;
+      margin-bottom: 16px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #cffafe;
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .premium-hero h1 {
+      margin: 0;
+      font-size: clamp(2.6rem, 6vw, 5rem);
+      line-height: 0.95;
+      letter-spacing: -0.08em;
+    }
+
+    .premium-hero p {
+      max-width: 700px;
+      margin: 18px 0 0;
+      color: #ddd6fe;
+      font-size: 1.1rem;
+      line-height: 1.7;
+      font-weight: 750;
+    }
+
+    .premium-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .premium-actions a,
+    .premium-actions button {
+      border: none;
+      padding: 14px 18px;
+      border-radius: 999px;
+      font-weight: 950;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .premium-primary {
+      color: #312e81;
+      background: white;
+    }
+
+    .premium-secondary {
+      color: white;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    }
+
+    .premium-product-card {
+      padding: 24px;
+      border-radius: 28px;
+      color: #111827;
+      background: white;
+      box-shadow: 0 22px 60px rgba(15, 23, 42, 0.15);
+    }
+
+    .premium-product-card h2 {
+      margin: 0 0 12px;
+      font-size: 28px;
+      letter-spacing: -0.05em;
+    }
+
+    .premium-product-card p {
+      margin: 0 0 16px;
+      color: #475569;
+      font-weight: 800;
+      line-height: 1.6;
+    }
+
+    .premium-price {
+      display: grid;
+      gap: 4px;
+      padding: 18px;
+      border-radius: 20px;
+      background: #f8fafc;
+      border: 1px solid #eef0f6;
+    }
+
+    .premium-price span {
+      color: #7c3aed;
+      font-size: 13px;
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .premium-price strong {
+      color: #111827;
+      font-size: 32px;
+      letter-spacing: -0.05em;
+    }
+
+    .premium-section {
+      margin-top: 18px;
+      padding: 28px;
+      border-radius: 28px;
+      background: white;
+      border: 1px solid #eef0f6;
+      box-shadow: 0 18px 55px rgba(15, 23, 42, 0.08);
+    }
+
+    .premium-section h2 {
+      margin: 0 0 18px;
+      color: #111827;
+      font-size: 32px;
+      letter-spacing: -0.06em;
+    }
+
+    .premium-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .premium-feature {
+      padding: 18px;
+      border-radius: 20px;
+      background: #f8fafc;
+      border: 1px solid #eef0f6;
+    }
+
+    .premium-feature span {
+      font-size: 28px;
+    }
+
+    .premium-feature h3 {
+      margin: 12px 0 8px;
+      color: #111827;
+      font-size: 18px;
+      letter-spacing: -0.04em;
+    }
+
+    .premium-feature p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.55;
+      font-weight: 750;
+    }
+
+    .premium-list {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .premium-list li {
+      padding: 15px 16px;
+      border-radius: 16px;
+      color: #334155;
+      background: #f8fafc;
+      border: 1px solid #eef0f6;
+      font-weight: 850;
+    }
+
+    .premium-warning {
+      margin-top: 18px;
+      padding: 20px;
+      border-radius: 22px;
+      color: #be123c;
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      font-weight: 900;
+      line-height: 1.6;
+    }
+
+    .premium-footer {
+      margin-top: 20px;
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 900px) {
+      .premium-hero-inner {
+        grid-template-columns: 1fr;
+        padding: 28px;
+      }
+
+      .premium-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .premium-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="premium-wrapper">
+
+    <section class="premium-hero">
+      <div class="premium-hero-inner">
+
+        <div>
+          <span class="premium-badge">Premium Study Pack</span>
+          <h1>Pharma Night Prep: Exam Survival Pack</h1>
+          <p>
+            A focused pharmacology revision pack designed for students who want
+            structured last-minute exam preparation with high-yield summaries,
+            MCQs, flashcards, and revision checklists.
+          </p>
+
+          <div class="premium-actions">
+            <a href="index.html" class="premium-primary">Open Free App</a>
+            <a href="#inside" class="premium-secondary">See What’s Inside</a>
+          </div>
+        </div>
+
+        <div class="premium-product-card">
+          <h2>Coming Soon</h2>
+          <p>
+            The free app is already available. The premium pack will be prepared
+            as a downloadable study companion.
+          </p>
+
+          <div class="premium-price">
+            <span>Product Type</span>
+            <strong>PDF + Flashcards + MCQs</strong>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="premium-section" id="inside">
+      <h2>What’s Inside</h2>
+
+      <div class="premium-grid">
+
+        <div class="premium-feature">
+          <span>📘</span>
+          <h3>Revision PDF</h3>
+          <p>Compact pharmacology revision sheets for quick exam preparation.</p>
+        </div>
+
+        <div class="premium-feature">
+          <span>🧬</span>
+          <h3>Mechanism Tables</h3>
+          <p>Drug class mechanisms arranged in simple high-yield tables.</p>
+        </div>
+
+        <div class="premium-feature">
+          <span>⚠️</span>
+          <h3>Side Effect Tables</h3>
+          <p>Important adverse effect patterns for exam revision.</p>
+        </div>
+
+        <div class="premium-feature">
+          <span>🧠</span>
+          <h3>300 MCQs</h3>
+          <p>Practice questions designed for active recall and exam prep.</p>
+        </div>
+
+        <div class="premium-feature">
+          <span>🃏</span>
+          <h3>Printable Flashcards</h3>
+          <p>Drug-focused flashcards for self-testing and rapid review.</p>
+        </div>
+
+        <div class="premium-feature">
+          <span>✅</span>
+          <h3>Weak Topic Checklist</h3>
+          <p>A checklist to track topics that need extra revision.</p>
+        </div>
+
+        <div class="premium-feature">
+          <span>🌙</span>
+          <h3>Last-Night Sheet</h3>
+          <p>A focused review sheet for the night before exams.</p>
+        </div>
+
+        <div class="premium-feature">
+          <span>📅</span>
+          <h3>7-Day Plan</h3>
+          <p>A simple revision plan for organizing pharmacology study.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="premium-section">
+      <h2>Who This Is For</h2>
+
+      <ul class="premium-list">
+        <li>Pharmacology students preparing for exams</li>
+        <li>Students who want quick high-yield revision</li>
+        <li>Students who prefer flashcards, MCQs, and summary tables</li>
+        <li>Students doing last-minute night-before-exam preparation</li>
+      </ul>
+    </section>
+
+    <section class="premium-section">
+      <h2>How It Works</h2>
+
+      <ul class="premium-list">
+        <li>Use the free app for search, flashcards, quiz mode, and weak review.</li>
+        <li>Use the premium pack for structured offline revision.</li>
+        <li>Practice MCQs and mark weak topics.</li>
+        <li>Repeat weak topics before exams.</li>
+      </ul>
+    </section>
+
+    <div class="premium-warning">
+      Educational revision only. Not medical advice. No dosing guidance.
+      No diagnosis, treatment, prescription, or self-treatment guidance.
+    </div>
+
+    <div class="premium-footer">
+      Pharma Night Prep · Exam Survival Pack · Version 1.0.0
+    </div>
+
+  </main>
+
+</body>
+</html>
