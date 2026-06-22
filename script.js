@@ -980,3 +980,46 @@ applyFilters = function(shouldScroll = true) {
     setupQuiz(allDrugs);
   }
 };
+
+
+/* APP VERSION + UPDATE BUTTON */
+
+const APP_VERSION = "1.0.0";
+
+const appVersionText = document.getElementById("appVersionText");
+const updateAppBtn = document.getElementById("updateAppBtn");
+
+if (appVersionText) {
+  appVersionText.textContent = `Version ${APP_VERSION}`;
+}
+
+if (updateAppBtn) {
+  updateAppBtn.addEventListener("click", async () => {
+    updateAppBtn.textContent = "Updating...";
+    updateAppBtn.disabled = true;
+
+    try {
+      if ("serviceWorker" in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+
+        for (const registration of registrations) {
+          await registration.update();
+        }
+      }
+
+      if ("caches" in window) {
+        const cacheNames = await caches.keys();
+
+        await Promise.all(
+          cacheNames.map(cacheName => caches.delete(cacheName))
+        );
+      }
+
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.location.href = `${cleanUrl}?v=${Date.now()}`;
+    } catch (error) {
+      console.warn("Update failed, reloading page.", error);
+      window.location.reload();
+    }
+  });
+}

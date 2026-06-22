@@ -6,7 +6,7 @@
 
   <title>Pharma Night Prep</title>
 
-  <link rel="stylesheet" href="style.css?v=120" />
+  <link rel="stylesheet" href="style.css?v=130" />
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#4f46e5" />
 </head>
@@ -47,6 +47,10 @@
           <h3>Pharma Student</h3>
           <p>Exam Mode</p>
         </div>
+      </div>
+            <div class="app-version-box">
+        <span id="appVersionText">Version 1.0.0</span>
+        <button id="updateAppBtn" type="button">Update App</button>
       </div>
     </aside>
 
@@ -310,12 +314,12 @@
 
   </div>
 
-  <script src="script.js?v=120"></script>
+  <script src="script.js?v=130"></script>
 
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function() {
-        navigator.serviceWorker.register("service-worker.js?v=120");
+        navigator.serviceWorker.register("service-worker.js?v=130");
       });
     }
   </script>

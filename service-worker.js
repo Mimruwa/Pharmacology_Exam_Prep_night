@@ -1,11 +1,11 @@
-const CACHE_NAME = "pharma-night-prep-v120";
+const CACHE_NAME = "pharma-night-prep-v130";
 
 const APP_ASSETS = [
   "./",
   "./index.html",
-  "./style.css?v=120",
-  "./script.js?v=120",
-  "./drugs.csv?v=120",
+  "./style.css?v=130",
+  "./script.js?v=130",
+  "./drugs.csv?v=130",
   "./manifest.json",
   "./icon 1.png",
   "./icon 2.png"
