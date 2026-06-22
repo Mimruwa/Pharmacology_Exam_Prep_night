@@ -6,7 +6,7 @@
 
   <title>Pharma Night Prep</title>
 
-  <link rel="stylesheet" href="style.css?v=150" />
+  <link rel="stylesheet" href="style.css?v=160" />
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#4f46e5" />
 </head>
@@ -28,6 +28,7 @@
       <nav class="sidebar-nav">
         <a href="#top" class="nav-link active">🏠 Dashboard</a>
         <a href="#revisionIndex" class="nav-link">🧬 Revision Index</a>
+        <a href="premium.html" class="nav-link">💎 Premium Pack</a>
         <a href="#drugCards" class="nav-link">⭐ High-Yield Drugs</a>
         <a href="#drugDetail" class="nav-link">📘 Details</a>
         <a href="#flashcardMode" class="nav-link">🧠 Flashcards</a>
@@ -332,22 +333,28 @@
       </section>
 
       <footer>
-        <p>Pharma Night Prep — Educational revision only. Not medical advice. No dosing or self-treatment guidance.</p>
-        <p>
-          <a href="privacy.html">Privacy & Disclaimer</a>
-        </p>
-      </footer>
+  <p>
+    Pharma Night Prep — Educational revision only.
+    Not medical advice. No dosing or self-treatment guidance.
+  </p>
+
+  <p>
+    <a href="privacy.html">Privacy & Disclaimer</a>
+    |
+    <a href="premium.html">💎 Premium Pack</a>
+  </p>
+</footer>
 
     </main>
 
   </div>
 
-  <script src="script.js?v=150"></script>
+  <script src="script.js?v=160"></script>
 
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function() {
-        navigator.serviceWorker.register("service-worker.js?v=150");
+        navigator.serviceWorker.register("service-worker.js?v=160");
       });
     }
   </script>
