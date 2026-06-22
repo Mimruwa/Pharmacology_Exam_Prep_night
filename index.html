@@ -6,7 +6,7 @@
 
   <title>Pharma Night Prep</title>
 
-  <link rel="stylesheet" href="style.css?v=130" />
+  <link rel="stylesheet" href="style.css?v=140" />
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#4f46e5" />
 </head>
@@ -32,6 +32,7 @@
         <a href="#drugDetail" class="nav-link">📘 Details</a>
         <a href="#flashcardMode" class="nav-link">🧠 Flashcards</a>
         <a href="#quizMode" class="nav-link">🧩 Quiz Mode</a>
+        <a href="#weakReview" class="nav-link">📝 Weak Review</a>
 
 
       </nav>
@@ -307,19 +308,43 @@
 
 
       <footer>
-        <p>Pharma Night Prep — Educational revision only. Not medical advice. No dosing or self-treatment guidance.</p>
+        <p>Pharma Night Prep — Educational revision only. </p>
+              <!-- WEAK REVIEW -->
+      <section id="weakReview" class="weak-panel">
+        <div class="panel-title">
+          <div>
+            <span>Mistake Review</span>
+            <h2>Weak Review List</h2>
+          </div>
+
+          <button id="clearWeakBtn" type="button" class="clear-weak-btn">Clear List</button>
+        </div>
+
+        <div class="weak-layout">
+          <div class="weak-summary-card">
+            <span>📝</span>
+            <h3 id="weakCount">0</h3>
+            <p>Saved Weak Drugs</p>
+          </div>
+
+          <div id="weakList" class="weak-list">
+            <p class="weak-empty">Wrong quiz answers will appear here.</p>
+          </div>
+        </div>
+      </section>
+
       </footer>
 
     </main>
 
   </div>
 
-  <script src="script.js?v=130"></script>
+  <script src="script.js?v=140"></script>
 
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function() {
-        navigator.serviceWorker.register("service-worker.js?v=130");
+        navigator.serviceWorker.register("service-worker.js?v=140");
       });
     }
   </script>
