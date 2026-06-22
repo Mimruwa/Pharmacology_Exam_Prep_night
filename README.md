@@ -8,6 +8,29 @@ It helps students revise pharmacology using searchable drug cards, system-wise i
 
 [Open Pharma Night Prep](https://mimruwa.github.io/Pharmacology_Exam_Prep_night/)
 
+## Screenshots
+
+### Dashboard
+
+![Dashboard](screenshots/dashboard.png)
+
+### Revision Index
+
+![Revision Index](screenshots/revision-index.png)
+
+### Flashcards
+
+![Flashcards](screenshots/flashcards.png)
+
+### Quiz Mode
+
+![Quiz Mode](screenshots/quiz-mode.png)
+
+### Weak Review
+
+![Weak Review](screenshots/weak-review.png)
+
+
 ## Features
 
 * Search drugs, drug classes, systems, mechanisms, and exam hints
