@@ -6,7 +6,7 @@
 
   <title>Pharma Night Prep</title>
 
-  <link rel="stylesheet" href="style.css?v=100" />
+  <link rel="stylesheet" href="style.css?v=110" />
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#4f46e5" />
 </head>
@@ -227,6 +227,7 @@
       </section>
 
 
+      
       <!-- QUIZ MODE -->
       <section id="quizMode" class="quiz-panel">
         <div class="panel-title">
@@ -243,6 +244,25 @@
               <span id="quizScore">Score: 0</span>
             </div>
 
+            <div class="quiz-mode-row">
+              <div>
+                <label>Quiz Type</label>
+                <select id="quizModeSelect">
+                  <option value="exam10">10-Question Exam Mode</option>
+                  <option value="practice">Practice Mode</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Question Set</label>
+                <select id="quizLimitSelect">
+                  <option value="10">10 Questions</option>
+                  <option value="20">20 Questions</option>
+                  <option value="all">All Filtered Drugs</option>
+                </select>
+              </div>
+            </div>
+
             <div class="quiz-question-box">
               <p id="quizQuestionType">Mechanism Question</p>
               <h3 id="quizQuestion">Quiz will load here</h3>
@@ -257,6 +277,17 @@
 
             <p id="quizFeedback" class="quiz-feedback"></p>
 
+            <div id="quizResult" class="quiz-result hidden">
+              <h3 id="quizResultTitle">Quiz Finished 🎉</h3>
+              <p id="quizResultScore">Score: 0 / 10</p>
+              <p id="quizResultMessage">Keep revising.</p>
+
+              <div>
+                <h4>Weak topics to review</h4>
+                <ul id="quizWeakTopics"></ul>
+              </div>
+            </div>
+
             <div class="quiz-actions">
               <button id="quizNextBtn" type="button">Next Question</button>
               <button id="quizRestartBtn" type="button">Restart Quiz</button>
@@ -266,6 +297,7 @@
           <div class="quiz-note">
             <h3>How quiz works</h3>
             <p>Quiz questions are automatically generated from your existing CSV data. No CSV edit needed.</p>
+            <p>Exam Mode gives a fixed question set and final score summary.</p>
             <p class="mini-warning">Educational revision only. Not medical advice.</p>
           </div>
         </div>
@@ -280,12 +312,12 @@
 
   </div>
 
-  <script src="script.js?v=100"></script>
+  <script src="script.js?v=110"></script>
 
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function() {
-        navigator.serviceWorker.register("service-worker.js?v=100");
+        navigator.serviceWorker.register("service-worker.js?v=110");
       });
     }
   </script>

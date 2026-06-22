@@ -639,11 +639,14 @@ fetch("./drugs.csv?v=" + Date.now())
 
 
   /* QUIZ MODE LOGIC */
+/* QUIZ MODE LOGIC - EXAM SUMMARY VERSION */
 
+let quizSourceDeck = [];
 let quizDeck = [];
 let quizIndex = 0;
 let quizScore = 0;
 let quizAnswered = false;
+let quizWrongTopics = [];
 
 const quizCounter = document.getElementById("quizCounter");
 const quizScoreText = document.getElementById("quizScore");
@@ -654,17 +657,54 @@ const quizFeedback = document.getElementById("quizFeedback");
 const quizNextBtn = document.getElementById("quizNextBtn");
 const quizRestartBtn = document.getElementById("quizRestartBtn");
 
+const quizModeSelect = document.getElementById("quizModeSelect");
+const quizLimitSelect = document.getElementById("quizLimitSelect");
+const quizResult = document.getElementById("quizResult");
+const quizResultScore = document.getElementById("quizResultScore");
+const quizResultMessage = document.getElementById("quizResultMessage");
+const quizWeakTopics = document.getElementById("quizWeakTopics");
+
 function setupQuiz(deck) {
   if (!quizQuestion || !quizOptions) {
     return;
   }
 
-  quizDeck = deck.filter(drug => drug.drug_name !== "");
+  quizSourceDeck = deck.filter(drug => drug.drug_name !== "");
+  startNewQuiz();
+}
+
+function startNewQuiz() {
+  const shuffledDeck = shuffleArray(quizSourceDeck);
+  const limit = getQuizLimit(shuffledDeck.length);
+
+  quizDeck = shuffledDeck.slice(0, limit);
   quizIndex = 0;
   quizScore = 0;
   quizAnswered = false;
+  quizWrongTopics = [];
+
+  if (quizResult) {
+    quizResult.classList.add("hidden");
+  }
+
+  if (quizNextBtn) {
+    quizNextBtn.textContent = "Next Question";
+  }
 
   renderQuizQuestion();
+}
+
+function getQuizLimit(total) {
+  if (!quizLimitSelect) {
+    return Math.min(10, total);
+  }
+
+  if (quizLimitSelect.value === "all") {
+    return total;
+  }
+
+  const selectedLimit = Number(quizLimitSelect.value);
+  return Math.min(selectedLimit, total);
 }
 
 function shuffleArray(array) {
@@ -678,9 +718,37 @@ function shuffleArray(array) {
   return copied;
 }
 
+function getQuestionClue(drug) {
+  if (drug.mechanism) {
+    return {
+      type: "Mechanism Question",
+      text: `Which drug matches this mechanism? ${drug.mechanism}`
+    };
+  }
+
+  if (drug.exam_hint) {
+    return {
+      type: "Exam Hint Question",
+      text: `Which drug matches this exam hint? ${drug.exam_hint}`
+    };
+  }
+
+  if (drug.exam_use) {
+    return {
+      type: "Exam Use Question",
+      text: `Which drug matches this use? ${drug.exam_use}`
+    };
+  }
+
+  return {
+    type: "Drug Class Question",
+    text: `Which drug belongs to this class? ${drug.drug_class || "Drug class"}`
+  };
+}
+
 function getQuizOptions(correctDrug) {
   const wrongOptions = allDrugs
-    .filter(drug => drug.drug_name !== correctDrug.drug_name)
+    .filter(drug => drug.drug_name && drug.drug_name !== correctDrug.drug_name)
     .sort(() => Math.random() - 0.5)
     .slice(0, 3);
 
@@ -697,6 +765,10 @@ function renderQuizQuestion() {
   quizFeedback.className = "quiz-feedback";
   quizAnswered = false;
 
+  if (quizResult) {
+    quizResult.classList.add("hidden");
+  }
+
   if (quizDeck.length === 0) {
     quizCounter.textContent = "Question 0 / 0";
     quizScoreText.textContent = "Score: 0";
@@ -706,17 +778,19 @@ function renderQuizQuestion() {
   }
 
   const currentDrug = quizDeck[quizIndex];
-
-  const clue =
-    currentDrug.mechanism ||
-    currentDrug.exam_hint ||
-    currentDrug.exam_use ||
-    `Drug class: ${currentDrug.drug_class}`;
+  const questionData = getQuestionClue(currentDrug);
 
   quizCounter.textContent = `Question ${quizIndex + 1} / ${quizDeck.length}`;
   quizScoreText.textContent = `Score: ${quizScore}`;
-  quizQuestionType.textContent = "Mechanism Question";
-  quizQuestion.textContent = `Which drug matches this clue? ${clue}`;
+  quizQuestionType.textContent = questionData.type;
+  quizQuestion.textContent = questionData.text;
+
+  if (quizNextBtn) {
+    const isLastQuestion = quizIndex === quizDeck.length - 1;
+    const isPracticeMode = quizModeSelect && quizModeSelect.value === "practice";
+
+    quizNextBtn.textContent = isLastQuestion && !isPracticeMode ? "Show Result" : "Next Question";
+  }
 
   const options = getQuizOptions(currentDrug);
 
@@ -727,13 +801,13 @@ function renderQuizQuestion() {
     button.dataset.answer = optionDrug.drug_name;
     button.dataset.correct = optionDrug.drug_name === currentDrug.drug_name ? "true" : "false";
 
-    button.addEventListener("click", () => checkQuizAnswer(button, currentDrug.drug_name));
+    button.addEventListener("click", () => checkQuizAnswer(button, currentDrug));
 
     quizOptions.appendChild(button);
   });
 }
 
-function checkQuizAnswer(selectedButton, correctAnswer) {
+function checkQuizAnswer(selectedButton, currentDrug) {
   if (quizAnswered) {
     return;
   }
@@ -756,7 +830,14 @@ function checkQuizAnswer(selectedButton, correctAnswer) {
     quizFeedback.classList.add("correct-text");
   } else {
     selectedButton.classList.add("wrong");
-    quizFeedback.textContent = `Wrong ❌ Correct answer: ${correctAnswer}`;
+
+    quizWrongTopics.push({
+      system: currentDrug.system || "Unknown System",
+      drug_class: currentDrug.drug_class || "Unknown Class",
+      drug_name: currentDrug.drug_name || "Unknown Drug"
+    });
+
+    quizFeedback.textContent = `Wrong ❌ Correct answer: ${currentDrug.drug_name}`;
     quizFeedback.classList.add("wrong-text");
   }
 
@@ -768,16 +849,99 @@ function nextQuizQuestion() {
     return;
   }
 
+  if (!quizAnswered) {
+    quizFeedback.textContent = "Pick an answer first.";
+    quizFeedback.className = "quiz-feedback wrong-text";
+    return;
+  }
+
+  const isPracticeMode = quizModeSelect && quizModeSelect.value === "practice";
+  const isLastQuestion = quizIndex === quizDeck.length - 1;
+
+  if (isLastQuestion && !isPracticeMode) {
+    showQuizResult();
+    return;
+  }
+
   quizIndex = (quizIndex + 1) % quizDeck.length;
   renderQuizQuestion();
 }
 
+function showQuizResult() {
+  const totalQuestions = quizDeck.length;
+  const percentage = totalQuestions > 0 ? Math.round((quizScore / totalQuestions) * 100) : 0;
+
+  quizOptions.innerHTML = "";
+  quizFeedback.textContent = "";
+  quizQuestionType.textContent = "Exam Complete";
+  quizQuestion.textContent = "Your quiz result is ready.";
+  quizCounter.textContent = `Finished ${totalQuestions} questions`;
+  quizScoreText.textContent = `Final Score: ${quizScore}`;
+
+  if (quizNextBtn) {
+    quizNextBtn.textContent = "Finished";
+  }
+
+  if (quizResult) {
+    quizResult.classList.remove("hidden");
+  }
+
+  if (quizResultScore) {
+    quizResultScore.textContent = `Score: ${quizScore} / ${totalQuestions} (${percentage}%)`;
+  }
+
+  if (quizResultMessage) {
+    if (percentage >= 80) {
+      quizResultMessage.textContent = "Excellent revision! You are doing great.";
+    } else if (percentage >= 60) {
+      quizResultMessage.textContent = "Good work. Review the weak topics once more.";
+    } else {
+      quizResultMessage.textContent = "Keep revising. Focus on the weak topics below.";
+    }
+  }
+
+  renderWeakTopics();
+}
+
+function renderWeakTopics() {
+  if (!quizWeakTopics) {
+    return;
+  }
+
+  quizWeakTopics.innerHTML = "";
+
+  if (quizWrongTopics.length === 0) {
+    const li = document.createElement("li");
+    li.textContent = "No weak topic found. Great job!";
+    quizWeakTopics.appendChild(li);
+    return;
+  }
+
+  const topicCount = new Map();
+
+  quizWrongTopics.forEach(item => {
+    const topic = `${item.system} — ${item.drug_class}`;
+
+    if (!topicCount.has(topic)) {
+      topicCount.set(topic, 0);
+    }
+
+    topicCount.set(topic, topicCount.get(topic) + 1);
+  });
+
+  const sortedTopics = [...topicCount.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
+  sortedTopics.forEach(([topic, count]) => {
+    const li = document.createElement("li");
+    li.textContent = `${topic} (${count} wrong)`;
+    quizWeakTopics.appendChild(li);
+  });
+}
+
 function restartQuiz() {
-  quizDeck = shuffleArray(quizDeck);
-  quizIndex = 0;
-  quizScore = 0;
-  quizAnswered = false;
-  renderQuizQuestion();
+  startNewQuiz();
 }
 
 if (quizNextBtn) {
@@ -788,19 +952,27 @@ if (quizRestartBtn) {
   quizRestartBtn.addEventListener("click", restartQuiz);
 }
 
-/* Connect quiz with existing app loading */
+if (quizModeSelect) {
+  quizModeSelect.addEventListener("change", startNewQuiz);
+}
 
-const originalStartAppForQuiz = startApp;
+if (quizLimitSelect) {
+  quizLimitSelect.addEventListener("change", startNewQuiz);
+}
+
+/* Connect exam quiz with existing app loading */
+
+const originalStartAppForExamQuiz = startApp;
 
 startApp = function(data) {
-  originalStartAppForQuiz(data);
+  originalStartAppForExamQuiz(data);
   setupQuiz(allDrugs);
 };
 
-const originalApplyFiltersForQuiz = applyFilters;
+const originalApplyFiltersForExamQuiz = applyFilters;
 
 applyFilters = function(shouldScroll = true) {
-  originalApplyFiltersForQuiz(shouldScroll);
+  originalApplyFiltersForExamQuiz(shouldScroll);
 
   if (visibleDrugs.length > 0) {
     setupQuiz(visibleDrugs);
